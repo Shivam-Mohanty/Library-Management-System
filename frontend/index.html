@@ -16,7 +16,11 @@
         <main>
             <section class="card">
                 <h2>Library Catalog</h2>
-                <button onclick="fetchBooks()" class="refresh-btn">Refresh Catalog</button>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="searchInput" placeholder="Search by title or author..." style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;">
+                    <button id="searchBtn" style="background-color: var(--secondary-color); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 14px;">Search</button>
+                    <button onclick="fetchBooks()" class="refresh-btn" style="margin-bottom: 0;">Refresh Catalog</button>
+                </div>
                 <div class="table-container">
                     <table id="booksTable">
                         <thead>

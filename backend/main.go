@@ -43,6 +43,7 @@ func main() {
 	// Define API Endpoints
 	http.HandleFunc("/api/books", getBooksHandler)
 	http.HandleFunc("/api/overdue", getOverdueBooksHandler)
+	http.HandleFunc("/api/search", searchBooksHandler)
 
 	// Start the server
 	fmt.Println("Server running on port 8080...")
@@ -109,4 +110,46 @@ func getOverdueBooksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(overdue)
+}
+
+// Handler for searching books by title or author
+func searchBooksHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	q := r.URL.Query().Get("q")
+	if q == "" {
+		json.NewEncoder(w).Encode([]Book{})
+		return
+	}
+
+	searchPattern := "%" + q + "%"
+	query := `
+		SELECT book_id, title, author, publisher, year_of_publication, available_copies
+		FROM Books
+		WHERE title ILIKE $1 OR author ILIKE $1
+	`
+
+	rows, err := db.Query(query, searchPattern)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var books []Book
+	for rows.Next() {
+		var b Book
+		if err := rows.Scan(&b.BookID, &b.Title, &b.Author, &b.Publisher, &b.YearPublished, &b.AvailableCopies); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		books = append(books, b)
+	}
+
+	if books == nil {
+		books = []Book{}
+	}
+
+	json.NewEncoder(w).Encode(books)
 }
