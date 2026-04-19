@@ -55,5 +55,3 @@ The included SQL scripts demonstrate various DBMS lab requirements, including:
 * Date operations for calculating overdue fines.
 
 ***
-
-Let me know if you need to adjust any of the steps or add specific details required by your instructor.
